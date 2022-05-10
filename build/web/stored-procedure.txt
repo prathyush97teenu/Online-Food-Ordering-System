@@ -1,0 +1,41 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS  `getLoginDetails` $$
+CREATE PROCEDURE `getLoginDetails`
+   (IN u_name VARCHAR(254), IN user_password VARCHAR(254))
+BEGIN
+  
+	select user_name,pass from login where user_name =u_name and pass = user_password;
+END $$
+
+DELIMITER ;
+
+------------------------------
+
+DROP TABLE IF EXISTS `audit_order_details`;
+CREATE TABLE `audit_order_details` (
+  `id` int(10) unsigned NOT NULL ,
+  `order_id` int(10) unsigned NOT NULL default '0',
+  `item_id` int(10) unsigned NOT NULL default '0',
+  `qnt` int(10) unsigned NOT NULL default '0',
+  `status` varchar(45) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+------------------------------------
+
+DELIMITER $$
+CREATE TRIGGER tg_audit_order_details 
+AFTER INSERT ON order_details
+    FOR EACH ROW 
+BEGIN
+   INSERT INTO audit_order_details (id,order_id,item_id,qnt,status)
+  VALUES (NEW.id,NEW.order_id,NEW.item_id,NEW.qnt,NEW.status);
+
+END$$
+DELIMITER ;
+
+
+
+ 
+
